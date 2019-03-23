@@ -1,76 +1,91 @@
-#include <Adafruit_TLC59711.h>
-
 /*
     Title : Chairmans Cart Code 2019
     Hardware : Arduino Uno
     Author : Cole Roof
-    Version : 3-6-19
+    Version : 3-23-19
 */
 
+// Button that chairmans person will press
 #define button_pin 8
 
+// All of the PWM pins
+// These are the pins that will fade
 #define red_pwm_b 11
 #define white_pwm_g 10
 #define blue_pwm_r 9
 
+// All of the digital pins for the border
+// These will either be on or off
 #define red_digital_pin 12
 #define white_digital_r A4
 #define white_digital_b A3
 #define blue_digital_pin A5
 
+// Below are the pins for the front panel
+// All of them are digital
+
+// Big planet it purple
 #define big_planet_r 2
 #define big_planet_b 3
+// Stars are white
 #define stars_r 4
 #define stars_g 5
 #define stars_b 6
+// The middle small planets are green
 #define planets_g 7
 
+// Constants for the PWMS
 #define PWM_FULL 0xff
 #define PWM_OFF 0x00
 
+// This is the variable that keeps track of what part of
+// the speech they are in
 uint8_t button_counter;
+// A debounce variable
 bool allowed_to_trigger;
 
 void setup()
 {
-    // Serial.begin( 9600 );
-    // Serial.println( "Chairmans Cart Initialized" );
+    Serial.begin(9600);
+    Serial.println("Chairmans Cart Initialized");
 
-    // Button that the chairman's people will press
+    // This button is triggered when it is connected to ground
+    // Hence the pullup resistor
     pinMode(button_pin, INPUT_PULLUP);
 
-    pinMode(2, OUTPUT);
-    pinMode(3, OUTPUT);
-    pinMode(4, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
-    pinMode(7, OUTPUT);
+    pinMode(red_digital_pin, OUTPUT);
+    pinMode(red_pwm_b, OUTPUT);
 
-    pinMode(9, OUTPUT);
-    pinMode(10, OUTPUT);
-    pinMode(11, OUTPUT);
-    pinMode(12, OUTPUT);
-    pinMode(13, OUTPUT);
+    pinMode(blue_pwm_r, OUTPUT);
+    pinMode(blue_digital_pin, OUTPUT);
 
-    pinMode( A3, OUTPUT);
-    pinMode( A4, OUTPUT);
-    pinMode( A5, OUTPUT);
+    pinMode(white_digital_r, OUTPUT);
+    pinMode(white_pwm_g, OUTPUT);
+    pinMode(white_digital_b, OUTPUT);
+
+    pinMode(stars_r, OUTPUT);
+    pinMode(stars_g, OUTPUT);
+    pinMode(stars_b, OUTPUT);
+
+    pinMode(big_planet_r, OUTPUT);
+    pinMode(big_planet_b, OUTPUT);
+
+    pinMode(planets_g, OUTPUT);
 
     // Init vars
     button_counter = 0;
     allowed_to_trigger = true;
 
+    // Makes sure that at startup all of the lights are off`
     turn_all_off();
 
-    // digitalWrite(planets_g, LOW);
-
-    // Slight pause for computer
+    // Slight pause for to catch up
     delay(100);
 }
 
 void loop()
 {
-    //Button pressed
+    //Button pressed && the debounce has been reset
     if (digitalRead(button_pin) == 0 && allowed_to_trigger)
     {
         button_counter++;
@@ -123,12 +138,15 @@ void order_of_operations(uint8_t count)
         // Serial.println( "Fadded to purple" );
         break;
     case 8:
+        // This is a saftey press so the lights don't turn off by accident
         break;
     case 9:
+        // This is also a saftey press so the lights don't turn off by accident
         break;
     case 10:
         turn_all_off();
-        // Serial.println( "Turnned all leds off" );
+        Serial.println("Turnned all leds off");
+        Serial.println("Chairmans cart finished");
         break;
     }
 }
@@ -148,7 +166,7 @@ void trigger_red_leds()
 
     digitalWrite(red_digital_pin, HIGH);
     // No green pin for digitaltrip
-    // Blue Pin should ndigitaltriggered for thidigital
+    // Blue Pin should not be triggered for this call
 }
 
 void trigger_blue_leds()
